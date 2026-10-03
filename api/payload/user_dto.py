@@ -1,7 +1,7 @@
 # Nivel de API
 from sqlmodel import SQLModel
 
-from model.users import CountryBase
+from models.users import CountryBase
 
 
 #Nivel API

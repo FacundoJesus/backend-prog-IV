@@ -10,7 +10,7 @@ from api.payload.user_dto import (
     GetUsersResponse,
 )
 from dependencies import CurrentUserDep, UserServiceDep
-from model.users import User, UserDB
+from models.users import User, UserDB
 
 
 

@@ -10,7 +10,7 @@ from sqlmodel import (
 from api import login_controller, user_controller
 from api.middlewares.counter import CounterMW
 from api.user_controller import UserDB
-from model.users import Country
+from models.users import Country
 from repositories import database
 from repositories.database import create_db_and_tables
 from utils.hash import hash_password

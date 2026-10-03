@@ -4,7 +4,7 @@ from fastapi import Query
 from sqlmodel import col, select
 
 from dependencies import SessionDep
-from model.users import User, UserDB
+from models.users import User, UserDB
 from utils.hash import hash_password
 
 

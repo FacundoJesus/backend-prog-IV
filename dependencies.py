@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends, Header, HTTPException
 from sqlmodel import Session
 
-from model.users import UserDB
+from models.users import UserDB
 from repositories.database import get_session
 from services.jwt_service import JWTService
 
