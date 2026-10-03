@@ -2,7 +2,7 @@ from typing import Annotated, Sequence
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
 
-from api.model.users import (
+from api.payload.user_dto import (
     CreateUserRequest,
     CreateUserResponse,
     DeleteUserResponse,

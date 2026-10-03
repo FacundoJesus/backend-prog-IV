@@ -7,9 +7,9 @@ from sqlmodel import (
     select,
 )
 
-from api import login, users
+from api import login_controller, user_controller
 from api.middlewares.counter import CounterMW
-from api.users import UserDB
+from api.user_controller import UserDB
 from model.users import Country
 from repositories import database
 from repositories.database import create_db_and_tables
@@ -23,8 +23,8 @@ logging.basicConfig(
 )
 
 app = FastAPI()
-app.include_router(users.router)
-app.include_router(login.router)
+app.include_router(user_controller.router)
+app.include_router(login_controller.router)
 
 counterMW = CounterMW()
 

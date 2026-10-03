@@ -5,15 +5,15 @@ from sqlmodel import Session
 
 from model.users import UserDB
 from repositories.database import get_session
-from services.jwt import JWTService
+from services.jwt_service import JWTService
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
-from repositories.users import UserRepository  # noqa: E402
+from repositories.user_repository import UserRepository  # noqa: E402
 
 UserRepositoryDep = Annotated[UserRepository, Depends(UserRepository)]
 
-from services.users import UserService, UserServiceInterface  # noqa: E402
+from services.user_service import UserService, UserServiceInterface  # noqa: E402
 
 UserServiceDep = Annotated[UserServiceInterface, Depends(UserService)]
 

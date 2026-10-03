@@ -2,9 +2,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from api.model.login import Login, LoginResponse
+from api.payload.login_dto import Login, LoginResponse
 from dependencies import JWTServiceDep
-from services.login import LoginService
+from services.login_service import LoginService
 
 router = APIRouter(tags=["Auth"])
 LoginServiceDep = Annotated[LoginService, Depends(LoginService)]
