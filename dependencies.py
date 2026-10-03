@@ -24,15 +24,21 @@ JWTServiceDep = Annotated[JWTService, Depends(get_jwt_service)]
 
 
 
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials # <-- AGREGADO
+
+security = HTTPBearer() # <-- AGREGADO
+
 def get_current_user(
     jwt_service: JWTServiceDep,
     repo: UserRepositoryDep,
-    authorization: Annotated[str | None, Header()] = None,
+    # authorization: Annotated[str | None, Header()] = None, # <-- ELIMINADO
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)] # <-- AGREGADO
 ) -> UserDB | None:
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
-
-    token = authorization.removeprefix("Bearer ")
+    # if not authorization or not authorization.startswith("Bearer "): # <-- ELIMINADO
+    #     raise HTTPException(status_code=401, detail="Missing or invalid Authorization header") # <-- ELIMINADO
+    #
+    # token = authorization.removeprefix("Bearer ") # <-- ELIMINADO
+    token = credentials.credentials # <-- AGREGADO
     payload = jwt_service.decode_token(token)
     if payload is None:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
