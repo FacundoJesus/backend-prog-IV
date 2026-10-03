@@ -17,7 +17,7 @@ Backend desarrollado para la cátedra de Programación IV de la UTN Paraná. Exp
 
 ## Estructura del proyecto
 - `api/` — Endpoints y rutas de FastAPI (controladores). Contiene también middlewares.
-- `model/` — Modelos de datos (SQLModel) y esquemas de validación (Pydantic).
+- `models/` — Modelos de datos (SQLModel) y esquemas de validación (Pydantic).
 - `repositories/` — Acceso a datos, configuración de la BD e interacciones directas con la base de datos (Patrón Repository).
 - `services/` — Lógica de negocio (ej. manejo de login, JWT, y operaciones sobre usuarios).
 - `utils/` — Funciones utilitarias auxiliares (como el manejo de hashes y passwords).
