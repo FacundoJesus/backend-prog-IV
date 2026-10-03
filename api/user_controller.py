@@ -1,6 +1,6 @@
 from typing import Annotated, Sequence
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
+from fastapi import APIRouter, HTTPException, Query
 
 from api.payload.user_dto import (
     CreateUserRequest,
@@ -66,5 +66,4 @@ def update_user(user_id: int, req: CreateUserRequest, service: UserServiceDep) -
     res = service.update_user(user_id, user)
     if res:
         return res
-
     raise HTTPException(status_code=404, detail="User not found")

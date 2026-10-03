@@ -1,27 +1,26 @@
 from typing import Annotated
-
-from fastapi import Depends, Header, HTTPException
+from fastapi import Depends, HTTPException
 from sqlmodel import Session
-
 from models.users import UserDB
 from repositories.database import get_session
 from services.jwt_service import JWTService
 
+# Para obtener la sesion
 SessionDep = Annotated[Session, Depends(get_session)]
 
-from repositories.user_repository import UserRepository  # noqa: E402
-
+from repositories.user_repository import UserRepository
+# Para usarlo en user_service
 UserRepositoryDep = Annotated[UserRepository, Depends(UserRepository)]
 
-from services.user_service import UserService, UserServiceInterface  # noqa: E402
 
+from services.user_service import UserService, UserServiceInterface
+# Para usarlo en user_controller
 UserServiceDep = Annotated[UserServiceInterface, Depends(UserService)]
 
 def get_jwt_service():
     return JWTService("my-secret-key")
-
+# Para usarlo en login_controller
 JWTServiceDep = Annotated[JWTService, Depends(get_jwt_service)]
-
 
 
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials # <-- AGREGADO
