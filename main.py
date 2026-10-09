@@ -64,4 +64,3 @@ def create_dummy_data():
 def on_startup():
     create_db_and_tables()
     create_dummy_data()
-
