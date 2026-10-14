@@ -13,3 +13,13 @@ def test_no_logueado():
     respuesta = cliente.get("/user")
     assert respuesta.status_code == 401
     assert respuesta.json()["detail"] == "Missing or invalid Authorization header"
+
+
+def test_login_ok():
+    respuesta = cliente.post("/login", json= {
+                                "email": "mgomez@email.com",
+                                "password": "123"
+                            })
+    assert respuesta.status_code == 200
+    assert respuesta.json()["msg"] == "ok"
+    assert respuesta.json()["token"]
