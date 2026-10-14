@@ -14,6 +14,7 @@ Backend desarrollado para la cátedra de Programación IV de la UTN Paraná. Exp
 - `fastapi dev main.py` — arranca el servidor en local con recarga en caliente (hot-reload).
 - `ruff check .` — revisa el estilo y posibles errores en el código (linter).
 - `pytest` — ejecuta los tests (si se encuentran configurados en el futuro).
+- `/code-review` — analiza y audita el código del proyecto en busca de errores, tipado y respeto de capas.
 
 ## Estructura del proyecto
 - `api/` — Endpoints y rutas de FastAPI (controladores). Contiene también middlewares.
