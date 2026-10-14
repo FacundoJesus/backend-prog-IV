@@ -23,3 +23,28 @@ def test_login_ok():
     assert respuesta.status_code == 200
     assert respuesta.json()["msg"] == "ok"
     assert respuesta.json()["token"]
+
+# Crear usuario OK
+def test_create_user_ok():
+    # 1. Nos logueamos con un usuario existente para obtener un token válido
+    login_resp = cliente.post("/login", json={
+        "email": "mgomez@email.com",
+        "password": "123"
+    })
+    token = login_resp.json()["token"]
+
+    # 2. Hacemos el POST enviando el token en los headers
+    resp = cliente.post(
+        "/user",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "name": "Facundo",
+            "age": 29,
+            "country_id": 1,
+            "email": "facucitera@hotmail.com",
+            "password": "pass123",
+        },
+    )
+    # 3. Verificamos el código 200 y que retorne el id del nuevo usuario
+    assert resp.status_code == 200
+    assert "id" in resp.json()
