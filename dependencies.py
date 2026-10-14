@@ -22,22 +22,16 @@ def get_jwt_service():
 # Para usarlo en login_controller
 JWTServiceDep = Annotated[JWTService, Depends(get_jwt_service)]
 
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials # <-- AGREGADO
-
-security = HTTPBearer() # <-- AGREGADO
+security = HTTPBearer()
 
 def get_current_user(
     jwt_service: JWTServiceDep,
     repo: UserRepositoryDep,
-    # authorization: Annotated[str | None, Header()] = None, # <-- ELIMINADO
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)] # <-- AGREGADO
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)]
 ) -> UserDB | None:
-    # if not authorization or not authorization.startswith("Bearer "): # <-- ELIMINADO
-    #     raise HTTPException(status_code=401, detail="Missing or invalid Authorization header") # <-- ELIMINADO
-    #
-    # token = authorization.removeprefix("Bearer ") # <-- ELIMINADO
-    token = credentials.credentials # <-- AGREGADO
+    token = credentials.credentials
     payload = jwt_service.decode_token(token)
     if payload is None:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
@@ -45,11 +39,9 @@ def get_current_user(
     user = repo.get_by_email(payload["sub"])
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
-
     return user
 
 CurrentUserDep = Annotated[UserDB, Depends(get_current_user)]
-
 
 def get_current_user_id(request: Request, repo: UserRepositoryDep) -> int:
     # The JWT was already validated by JWTAuthMW, which stores the payload in request.state.

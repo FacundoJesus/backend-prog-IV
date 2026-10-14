@@ -10,7 +10,7 @@ from api.payload.user_dto import (
     GetUserResponseWithCountry,
     GetUsersResponse,
 )
-from dependencies import CurrentUserDep, UserServiceDep, CurrentUserIdDep
+from dependencies import UserServiceDep, CurrentUserIdDep
 from models.users import User, UserDB
 
 
@@ -26,11 +26,9 @@ def create_user(req: CreateUserRequest, service: UserServiceDep) -> User:
 @router.get("/user", response_model=Sequence[GetUsersResponse])
 def get_users_endpoint(
     service: UserServiceDep,
-    me: CurrentUserDep,
     offset: int = 0,
     limit: Annotated[int, Query(le=100)] = 100
 )-> Sequence[User]:
-    print(f"soy el usuario {me}")
     return service.get_users(offset, limit)
     
 
