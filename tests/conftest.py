@@ -42,3 +42,9 @@ def seed_fixture(session: Session):
         UserDB(name="Camila Martínez", email="cma@email.com", age=15, country_id=2, password=pwd),
     ])
     session.commit()
+
+# Agrego auth
+@pytest.fixture(name="auth_headers")
+def auth_headers_fixture(client: TestClient, seed):
+    res = client.post("/login", json={"email": "mgomez@email.com","password": "123"})
+    return {"Authorization": f"Bearer {res.json()["token"]}"}
