@@ -1,6 +1,5 @@
-# get users
+# GET USERS
 import pytest
-
 
 def test_get_user_ok(client, auth_headers):
     res = client.get("/user", headers=auth_headers)
@@ -8,18 +7,19 @@ def test_get_user_ok(client, auth_headers):
     assert len(res.json()) == 3
 
 
-# get user by id
+# Get user by id OK
 def test_get_user_by_id_ok(client, auth_headers):
     res = client.get("/user/1", headers=auth_headers)
     assert res.status_code == 200
     assert res.json()["id"] == 1
     assert res.json()["email"] == "mgomez@email.com"
 
+# Get user by id Fail
 def test_get_user_by_id_fail(client, auth_headers):
     res = client.get("/user/120", headers=auth_headers)
     assert res.status_code == 404
 
-# no logueados
+# Get users not Auth
 @pytest.mark.parametrize(
         "method, path",
         [
@@ -28,9 +28,8 @@ def test_get_user_by_id_fail(client, auth_headers):
             ("get", "/user/search/ma")
         ],
 )
+
 def test_protegidos(client, method, path):
     res = getattr(client, method)(path)
     assert res.status_code == 401
     assert res.json()["detail"] == "Missing or invalid Authorization header"
-
-
