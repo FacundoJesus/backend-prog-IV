@@ -7,7 +7,7 @@ from sqlmodel import (
     select,
 )
 
-from api import login_controller, user_controller
+from api import login_controller, user_controller, roles, permissions
 from api.middlewares.auth import JWTAuthMW
 from api.middlewares.counter import CounterMW
 from api.user_controller import UserDB
@@ -15,6 +15,7 @@ from models.users import Country
 from repositories import database
 from repositories.database import create_db_and_tables
 from utils.hash import hash_password
+from repositories.seed import seed_roles_and_permissions, seed_user_roles
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +25,11 @@ logging.basicConfig(
 )
 
 app = FastAPI()
+
 app.include_router(user_controller.router)
 app.include_router(login_controller.router)
+app.include_router(roles.router)
+app.include_router(permissions.router)
 
 counterMW = CounterMW()
 jwtAuthMW = JWTAuthMW()
@@ -65,6 +69,11 @@ def create_dummy_data():
         users = [UserDB(name=name, email=email, age=age, country_id=country, password=hashed_pwd) for name, email, age, country in names_and_ages]
         session.add_all(users)
         session.commit()
+
+def create_roles_and_permissions():
+    with Session(database.engine) as session:
+        seed_roles_and_permissions(session)
+        seed_user_roles(session)
 
 @app.on_event("startup")
 def on_startup():

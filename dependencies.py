@@ -8,18 +8,29 @@ from services.jwt_service import JWTService
 # Para obtener la sesion
 SessionDep = Annotated[Session, Depends(get_session)]
 
-from repositories.user_repository import UserRepository
 # Para usarlo en user_service
+from repositories.user_repository import UserRepository
 UserRepositoryDep = Annotated[UserRepository, Depends(UserRepository)]
 
-
-from services.user_service import UserService, UserServiceInterface
 # Para usarlo en user_controller
+from services.user_service import UserService, UserServiceInterface
 UserServiceDep = Annotated[UserServiceInterface, Depends(UserService)]
 
+from repositories.roles import RoleRepository  # noqa: E402
+RoleRepositoryDep = Annotated[RoleRepository, Depends(RoleRepository)]
+
+from services.roles import RoleService, RoleServiceInterface  # noqa: E402
+RoleServiceDep = Annotated[RoleServiceInterface, Depends(RoleService)]
+
+from repositories.permissions import PermissionRepository  # noqa: E402
+PermissionRepositoryDep = Annotated[PermissionRepository, Depends(PermissionRepository)]
+
+from services.permissions import PermissionService, PermissionServiceInterface  # noqa: E402
+PermissionServiceDep = Annotated[PermissionServiceInterface, Depends(PermissionService)]
+
+# Para usarlo en login_controller
 def get_jwt_service():
     return JWTService("my-secret-key")
-# Para usarlo en login_controller
 JWTServiceDep = Annotated[JWTService, Depends(get_jwt_service)]
 
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials

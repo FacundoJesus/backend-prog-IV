@@ -4,6 +4,7 @@
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 
+from models.roles import Role, UserRole
 
 class CountryBase(SQLModel):
     name: str = Field(index=True)
@@ -26,3 +27,4 @@ class User(SQLModel):
 class UserDB(User, table=True):
     id: int | None = Field(default=None, primary_key=True)
     country: Country | None = Relationship(back_populates="users")
+    roles: list[Role] = Relationship(back_populates="users", link_model=UserRole)
