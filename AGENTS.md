@@ -19,7 +19,7 @@ Backend desarrollado para la cátedra de Programación IV de la UTN Paraná. Exp
 ## Estructura del proyecto
 - `api/` — Endpoints y rutas de FastAPI (controladores: usuarios, login, roles, permisos). Contiene middlewares (`auth`, `counter`) y decoradores de protección (`@protected`).
 - `api/payload/` — Esquemas de validación y DTOs de request/response (usuarios, roles, permisos).
-- `models/` — Modelos de datos (SQLModel) para usuarios (`users.py`) y roles/permisos (`roles.py`, con tablas intermedias `RolePermission` y `UserRole`).
+- `models/` — Modelos de datos (SQLModel) para usuarios (`users.py`), permisos (`permissions.py`) y roles (`roles.py`, con tablas intermedias `RolePermission` y `UserRole`).
 - `repositories/` — Acceso a datos, configuración de la BD e interacciones directas con la base de datos (Patrón Repository: usuarios, roles, permisos) y semillas de datos (`seed.py`).
 - `services/` — Lógica de negocio e interfaces abstractas (`UserServiceInterface`, `RoleServiceInterface`, `PermissionServiceInterface`, `JWTService`).
 - `utils/` — Funciones utilitarias auxiliares (como el manejo de hashes y contraseñas).

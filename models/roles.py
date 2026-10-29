@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
+    from models.permissions import Permission
     from models.users import UserDB
 
 ADMIN_ROLE = "ADMIN"
@@ -27,18 +28,8 @@ class RoleBase(SQLModel):
     description: str | None = None
 
 
-class PermissionBase(SQLModel):
-    name: str = Field(unique=True, index=True)
-    description: str | None = None
-
-
 # Nivel de base de datos
 class Role(RoleBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     permissions: list["Permission"] = Relationship(back_populates="roles", link_model=RolePermission)
     users: list["UserDB"] = Relationship(back_populates="roles", link_model=UserRole)
-
-
-class Permission(PermissionBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    roles: list[Role] = Relationship(back_populates="permissions", link_model=RolePermission)

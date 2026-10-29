@@ -5,7 +5,8 @@ from fastapi import Query
 from sqlmodel import col, select
 
 from dependencies import SessionDep
-from models.roles import Permission, Role, RoleBase
+from models.permissions import Permission
+from models.roles import Role, RoleBase
 
 
 class RoleRepository:

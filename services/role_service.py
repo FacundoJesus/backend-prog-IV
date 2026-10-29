@@ -5,7 +5,8 @@ from typing import Annotated
 from fastapi import Query
 
 from dependencies import RoleRepositoryDep
-from models.roles import Permission, Role, RoleBase
+from models.permissions import Permission
+from models.roles import Role, RoleBase
 
 
 class RoleServiceInterface(ABC):

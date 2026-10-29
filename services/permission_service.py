@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import Query
 
 from dependencies import PermissionRepositoryDep
-from models.roles import Permission, PermissionBase
+from models.permissions import Permission, PermissionBase
 
 
 class PermissionServiceInterface(ABC):

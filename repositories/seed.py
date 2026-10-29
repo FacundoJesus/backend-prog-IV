@@ -1,6 +1,7 @@
 from sqlmodel import Session, select
 
-from models.roles import ADMIN_ROLE, REGULAR_ROLE, Permission, Role
+from models.permissions import Permission
+from models.roles import ADMIN_ROLE, REGULAR_ROLE, Role
 from models.users import UserDB
 
 ADMIN_EMAIL = "mgomez@email.com"

@@ -13,7 +13,7 @@ from api.payload.permissions import (
     GetPermissionsResponse,
 )
 from dependencies import PermissionServiceDep
-from models.roles import Permission, PermissionBase
+from models.permissions import Permission, PermissionBase
 
 router = APIRouter(tags=["Permissions"], dependencies=[Depends(HTTPBearer())])
 
