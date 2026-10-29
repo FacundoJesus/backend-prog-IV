@@ -7,7 +7,7 @@ from sqlmodel import (
     select,
 )
 
-from api import login_controller, user_controller, roles, permissions
+from api import login_controller, permission_controller, role_controller, user_controller
 from api.middlewares.auth import JWTAuthMW
 from api.middlewares.counter import CounterMW
 from api.user_controller import UserDB
@@ -28,8 +28,8 @@ app = FastAPI()
 
 app.include_router(user_controller.router)
 app.include_router(login_controller.router)
-app.include_router(roles.router)
-app.include_router(permissions.router)
+app.include_router(role_controller.router)
+app.include_router(permission_controller.router)
 
 counterMW = CounterMW()
 jwtAuthMW = JWTAuthMW()
