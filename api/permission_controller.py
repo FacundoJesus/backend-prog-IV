@@ -18,6 +18,7 @@ from models.permissions import Permission, PermissionBase
 router = APIRouter(tags=["Permissions"], dependencies=[Depends(HTTPBearer())])
 
 
+# Crear Permiso
 @router.post("/permission", response_model=CreatePermissionResponse, status_code=201)
 @protected
 def create_permission(req: CreatePermissionRequest, service: PermissionServiceDep) -> Permission:
@@ -26,6 +27,7 @@ def create_permission(req: CreatePermissionRequest, service: PermissionServiceDe
     return service.create_permission(PermissionBase(name=req.name, description=req.description))
 
 
+# Obtener Permisos
 @router.get("/permission", response_model=Sequence[GetPermissionsResponse])
 @protected
 def get_permissions(
@@ -34,6 +36,7 @@ def get_permissions(
     return service.get_permissions(offset, limit)
 
 
+# Obtener Permiso por ID
 @router.get("/permission/{permission_id}", response_model=GetPermissionResponse)
 @protected
 def get_permission_by_id(permission_id: int, service: PermissionServiceDep) -> Permission:
@@ -43,6 +46,7 @@ def get_permission_by_id(permission_id: int, service: PermissionServiceDep) -> P
     return permission
 
 
+# Actualizar Permiso
 @router.patch("/permission/{permission_id}", response_model=CreatePermissionResponse)
 @protected
 def update_permission(permission_id: int, req: CreatePermissionRequest, service: PermissionServiceDep) -> Permission:
@@ -55,6 +59,7 @@ def update_permission(permission_id: int, req: CreatePermissionRequest, service:
     return res
 
 
+# Eliminar Permiso
 @router.delete("/permission/{permission_id}", response_model=DeletePermissionResponse)
 @protected
 def delete_permission(permission_id: int, service: PermissionServiceDep) -> DeletePermissionResponse:

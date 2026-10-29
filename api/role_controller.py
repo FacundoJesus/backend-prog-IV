@@ -20,6 +20,7 @@ from models.users import UserDB
 router = APIRouter(tags=["Roles"], dependencies=[Depends(HTTPBearer())])
 
 
+# Crear Rol
 @router.post("/role", response_model=CreateRoleResponse, status_code=201)
 @protected
 def create_role(req: CreateRoleRequest, service: RoleServiceDep) -> Role:
@@ -28,12 +29,14 @@ def create_role(req: CreateRoleRequest, service: RoleServiceDep) -> Role:
     return service.create_role(RoleBase(name=req.name, description=req.description))
 
 
+# Obtener Roles
 @router.get("/role", response_model=Sequence[GetRolesResponse])
 @protected
 def get_roles(service: RoleServiceDep, offset: int = 0, limit: Annotated[int, Query(le=100)] = 100) -> Sequence[Role]:
     return service.get_roles(offset, limit)
 
 
+# Obtener Rol por ID
 @router.get("/role/{role_id}", response_model=GetRoleResponseWithPermissions)
 @protected
 def get_role_by_id(role_id: int, service: RoleServiceDep) -> Role:
@@ -43,6 +46,7 @@ def get_role_by_id(role_id: int, service: RoleServiceDep) -> Role:
     return role
 
 
+# Actualizar Rol
 @router.patch("/role/{role_id}", response_model=CreateRoleResponse)
 @protected
 def update_role(role_id: int, req: CreateRoleRequest, service: RoleServiceDep) -> Role:
@@ -55,6 +59,7 @@ def update_role(role_id: int, req: CreateRoleRequest, service: RoleServiceDep) -
     return res
 
 
+# Eliminar Rol
 @router.delete("/role/{role_id}", response_model=DeleteRoleResponse)
 @protected
 def delete_role(role_id: int, service: RoleServiceDep) -> DeleteRoleResponse:
@@ -64,6 +69,7 @@ def delete_role(role_id: int, service: RoleServiceDep) -> DeleteRoleResponse:
     return DeleteRoleResponse(msg="Rol borrado con éxito")
 
 
+# Asignar Permiso a Rol
 @router.post("/role/{role_id}/permission/{permission_id}", response_model=GetRoleResponseWithPermissions)
 @protected
 def add_permission_to_role(
@@ -78,6 +84,7 @@ def add_permission_to_role(
     return service.add_permission(role, permission)
 
 
+# Quitar Permiso a Rol
 @router.delete("/role/{role_id}/permission/{permission_id}", response_model=GetRoleResponseWithPermissions)
 @protected
 def remove_permission_from_role(
@@ -92,6 +99,7 @@ def remove_permission_from_role(
     return service.remove_permission(role, permission)
 
 
+# Obtener Usuarios de un Rol
 @router.get("/role/{role_id}/user", response_model=Sequence[GetUsersResponse])
 @protected
 def get_role_users(role_id: int, service: RoleServiceDep) -> Sequence[UserDB]:

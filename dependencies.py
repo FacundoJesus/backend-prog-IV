@@ -16,19 +16,19 @@ UserRepositoryDep = Annotated[UserRepository, Depends(UserRepository)]
 from services.user_service import UserService, UserServiceInterface
 UserServiceDep = Annotated[UserServiceInterface, Depends(UserService)]
 
-from repositories.role_repository import RoleRepository  # noqa: E402
+from repositories.role_repository import RoleRepository 
 RoleRepositoryDep = Annotated[RoleRepository, Depends(RoleRepository)]
 
-from services.role_service import RoleService, RoleServiceInterface  # noqa: E402
+from services.role_service import RoleService, RoleServiceInterface
 RoleServiceDep = Annotated[RoleServiceInterface, Depends(RoleService)]
 
-from repositories.permission_repository import PermissionRepository  # noqa: E402
+from repositories.permission_repository import PermissionRepository  
 PermissionRepositoryDep = Annotated[PermissionRepository, Depends(PermissionRepository)]
 
-from services.permission_service import PermissionService, PermissionServiceInterface  # noqa: E402
+from services.permission_service import PermissionService, PermissionServiceInterface
 PermissionServiceDep = Annotated[PermissionServiceInterface, Depends(PermissionService)]
 
-from services.login_service import LoginService, LoginServiceInterface  # noqa: E402
+from services.login_service import LoginService, LoginServiceInterface
 LoginServiceDep = Annotated[LoginServiceInterface, Depends(LoginService)]
 
 # Para usarlo en login_controller

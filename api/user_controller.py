@@ -43,6 +43,7 @@ def permission_check(p: str) -> Callable[..., None]:
 
 
 
+# Crear Usuario
 @router.post("/user", response_model=CreateUserResponse)
 @protected
 def create_user(req: CreateUserRequest, service: UserServiceDep) -> UserDB:
@@ -51,6 +52,7 @@ def create_user(req: CreateUserRequest, service: UserServiceDep) -> UserDB:
 
 
 
+# Obtener Usuarios
 @router.get("/user", response_model=Sequence[GetUsersResponse])
 @protected
 def get_users_endpoint(
@@ -62,6 +64,7 @@ def get_users_endpoint(
     
 
 
+# Obtener Usuario por ID
 @router.get("/user/{user_id}", response_model=GetUserResponseWithCountry)
 @protected
 def get_user_by_id(user_id: int, service: UserServiceDep) -> UserDB:
@@ -72,6 +75,7 @@ def get_user_by_id(user_id: int, service: UserServiceDep) -> UserDB:
 
 
 
+# Buscar Usuario por Nombre
 @router.get("/user/search/{name}", response_model=Sequence[GetUserResponseWithCountry])
 @protected
 def search_user(name: str, service: UserServiceDep) -> Sequence[UserDB]:
@@ -79,6 +83,7 @@ def search_user(name: str, service: UserServiceDep) -> Sequence[UserDB]:
 
 
 
+# Obtener ID del Usuario Actual
 @router.get("/user/me/id")
 @protected
 def get_my_id(me_id: CurrentUserIdDep) -> dict[str, int]:
@@ -86,6 +91,7 @@ def get_my_id(me_id: CurrentUserIdDep) -> dict[str, int]:
 
 
 
+# Obtener Usuarios Mayores de Edad
 @router.get("/user_mayores", response_model=Sequence[GetUserResponseWithCountry])
 @protected
 def search_mayores(service: UserServiceDep)-> Sequence[UserDB]:
@@ -93,6 +99,7 @@ def search_mayores(service: UserServiceDep)-> Sequence[UserDB]:
 
 
 
+# Eliminar Usuario
 @router.delete("/user/{user_id}", response_model=DeleteUserResponse, dependencies=[Depends(permission_check("delete_users"))])
 @protected
 def delete_user(user_id: int, service: UserServiceDep) -> DeleteUserResponse:
@@ -105,6 +112,7 @@ def delete_user(user_id: int, service: UserServiceDep) -> DeleteUserResponse:
 
 
 
+# Actualizar Usuario
 @router.patch("/user/{user_id}", response_model=CreateUserResponse, dependencies=[Depends(permission_check("update_users"))])
 @protected
 def update_user(user_id: int, req: CreateUserRequest, service: UserServiceDep) -> UserDB:
@@ -117,6 +125,7 @@ def update_user(user_id: int, req: CreateUserRequest, service: UserServiceDep) -
 
 
 
+# Asignar Rol a Usuario
 @router.post("/user/{user_id}/role/{role_id}", response_model=GetUserResponseWithCountry)
 @protected
 def add_role_to_user(user_id: int, role_id: int, service: UserServiceDep, role_service: RoleServiceDep) -> UserDB:
@@ -130,6 +139,7 @@ def add_role_to_user(user_id: int, role_id: int, service: UserServiceDep, role_s
 
 
 
+# Quitar Rol a Usuario
 @router.delete("/user/{user_id}/role/{role_id}", response_model=GetUserResponseWithCountry)
 @protected
 def remove_role_from_user(user_id: int, role_id: int, service: UserServiceDep, 

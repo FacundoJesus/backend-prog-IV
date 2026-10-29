@@ -6,6 +6,7 @@ from dependencies import JWTServiceDep, LoginServiceDep
 router = APIRouter(tags=["Auth"])
 
 
+# Iniciar Sesión
 @router.post("/login", response_model=LoginResponse)
 def login(req: Login, service: LoginServiceDep, jwt_service: JWTServiceDep) -> LoginResponse:
     valid = service.login(req.email, req.password)
