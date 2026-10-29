@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Annotated, Sequence
+from collections.abc import Sequence
 
-from fastapi import Query
 
 from dependencies import UserRepositoryDep
 from models.roles import Role
@@ -10,11 +9,11 @@ from models.users import User, UserDB
 
 class UserServiceInterface(ABC):
     @abstractmethod
-    def get_users(self, offset: int, limit: int) -> Sequence[User]:
+    def get_users(self, offset: int, limit: int) -> Sequence[UserDB]:
         ...
 
     @abstractmethod
-    def create_user(self, user: User) -> User:
+    def create_user(self, user: User) -> UserDB:
         ...
 
     @abstractmethod
@@ -30,7 +29,7 @@ class UserServiceInterface(ABC):
         ...
 
     @abstractmethod
-    def delete_user(self, user_id: int):
+    def delete_user(self, user_id: int) -> None:
         ...
 
     @abstractmethod
@@ -52,11 +51,11 @@ class UserService(UserServiceInterface):
     def get_users(
         self,
         offset: int = 0,
-        limit: Annotated[int, Query(le=100)] = 100,
-    )-> Sequence[User]:
+        limit: int = 100,
+    ) -> Sequence[UserDB]:
         return self.repo.fetch_users(offset, limit)
 
-    def create_user(self, user: User) -> User:
+    def create_user(self, user: User) -> UserDB:
         return self.repo.create_user(user)
 
     def get_user_by_id(self, user_id: int) -> UserDB | None:
@@ -68,7 +67,7 @@ class UserService(UserServiceInterface):
     def search_mayores(self) -> Sequence[UserDB]:
         return self.repo.fetch_adults()
 
-    def delete_user(self, user_id: int):
+    def delete_user(self, user_id: int) -> None:
         self.repo.delete_user(user_id)
 
     def update_user(self, user_id: int, user: User) -> UserDB | None:

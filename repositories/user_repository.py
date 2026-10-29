@@ -1,6 +1,5 @@
-from typing import Annotated, Sequence
+from collections.abc import Sequence
 
-from fastapi import Query
 from sqlmodel import col, select
 
 from dependencies import SessionDep
@@ -16,8 +15,8 @@ class UserRepository:
     def fetch_users(
         self,
         offset: int = 0,
-        limit: Annotated[int, Query(le=100)] = 100,
-    )-> Sequence[UserDB]:
+        limit: int = 100,
+    ) -> Sequence[UserDB]:
         statement = select(UserDB).offset(offset).limit(limit)
         result = self.session.exec(statement)
         users = result.all()
@@ -57,10 +56,11 @@ class UserRepository:
         result = self.session.exec(statement)
         return result.all()
 
-    def delete_user(self, user_id: int):
+    def delete_user(self, user_id: int) -> None:
         user = self.session.get(UserDB, user_id)
-        self.session.delete(user)
-        self.session.commit()
+        if user:
+            self.session.delete(user)
+            self.session.commit()
 
     def update_user(self, user_id: int, user: User) -> UserDB | None:
         userDb = self.session.get(UserDB, user_id)

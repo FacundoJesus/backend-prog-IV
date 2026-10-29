@@ -1,13 +1,9 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 
 from api.payload.login_dto import Login, LoginResponse
-from dependencies import JWTServiceDep
-from services.login_service import LoginService
+from dependencies import JWTServiceDep, LoginServiceDep
 
 router = APIRouter(tags=["Auth"])
-LoginServiceDep = Annotated[LoginService, Depends(LoginService)]
 
 
 @router.post("/login", response_model=LoginResponse)
@@ -17,4 +13,3 @@ def login(req: Login, service: LoginServiceDep, jwt_service: JWTServiceDep) -> L
         raise HTTPException(status_code=401, detail="User/password incorrect")
 
     return LoginResponse(msg="ok", token=jwt_service.create_access_token({"sub": req.email}))
-

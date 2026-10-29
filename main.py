@@ -1,7 +1,7 @@
 
 import logging
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from sqlmodel import (
     Session,
     select,
@@ -10,12 +10,11 @@ from sqlmodel import (
 from api import login_controller, permission_controller, role_controller, user_controller
 from api.middlewares.auth import JWTAuthMW
 from api.middlewares.counter import CounterMW
-from api.user_controller import UserDB
-from models.users import Country
+from models.users import Country, UserDB
 from repositories import database
 from repositories.database import create_db_and_tables
-from utils.hash import hash_password
 from repositories.seed import seed_roles_and_permissions, seed_user_roles
+from utils.hash import hash_password
 
 logger = logging.getLogger(__name__)
 
@@ -24,26 +23,23 @@ logging.basicConfig(
     format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
 )
 
-app = FastAPI()
+jwtAuthMW = JWTAuthMW()
 
+app = FastAPI(dependencies=[Depends(jwtAuthMW.check_jwt)])
 app.include_router(user_controller.router)
 app.include_router(login_controller.router)
 app.include_router(role_controller.router)
 app.include_router(permission_controller.router)
 
 counterMW = CounterMW()
-jwtAuthMW = JWTAuthMW()
 
-@app.middleware("http")
-async def jwt_auth_middleware(request: Request, call_next):
-    return await jwtAuthMW.check_jwt(request, call_next)
 
 @app.middleware("counter")
 async def middle_ware_prueba(request: Request, call_next):
     return await counterMW.middle_ware_prueba(request, call_next)
 
 
-def create_dummy_data():
+def create_dummy_data() -> None:
     with Session(database.engine) as session:
         if session.exec(select(UserDB)).first():
             return
@@ -66,16 +62,20 @@ def create_dummy_data():
             ("Tomás Romero", "tro@email.com", 37, 2),
         ]
         hashed_pwd = hash_password("123")
-        users = [UserDB(name=name, email=email, age=age, country_id=country, password=hashed_pwd) for name, email, age, country in names_and_ages]
+        users = [
+            UserDB(name=name, email=email, age=age, country_id=country, password=hashed_pwd)
+            for name, email, age, country in names_and_ages
+        ]
         session.add_all(users)
         session.commit()
 
-def create_roles_and_permissions():
+def create_roles_and_permissions() -> None:
     with Session(database.engine) as session:
         seed_roles_and_permissions(session)
         seed_user_roles(session)
 
 @app.on_event("startup")
-def on_startup():
+def on_startup() -> None:
     create_db_and_tables()
     create_dummy_data()
+    create_roles_and_permissions()

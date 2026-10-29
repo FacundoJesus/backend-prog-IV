@@ -1,7 +1,5 @@
 from collections.abc import Sequence
-from typing import Annotated
 
-from fastapi import Query
 from sqlmodel import col, select
 
 from dependencies import SessionDep
@@ -12,7 +10,7 @@ class PermissionRepository:
     def __init__(self, session: SessionDep):
         self.session = session
 
-    def fetch_permissions(self, offset: int = 0, limit: Annotated[int, Query(le=100)] = 100) -> Sequence[Permission]:
+    def fetch_permissions(self, offset: int = 0, limit: int = 100) -> Sequence[Permission]:
         statement = select(Permission).offset(offset).limit(limit)
         return self.session.exec(statement).all()
 
@@ -30,7 +28,7 @@ class PermissionRepository:
         statement = select(Permission).where(col(Permission.name) == name)
         return self.session.exec(statement).first()
 
-    def delete_permission(self, permission_id: int):
+    def delete_permission(self, permission_id: int) -> None:
         permission = self.session.get(Permission, permission_id)
         if permission:
             self.session.delete(permission)

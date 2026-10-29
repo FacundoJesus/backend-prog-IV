@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Annotated
 
-from fastapi import Query
 
 from dependencies import PermissionRepositoryDep
 from models.permissions import Permission, PermissionBase
@@ -22,7 +20,7 @@ class PermissionServiceInterface(ABC):
     def get_permission_by_name(self, name: str) -> Permission | None: ...
 
     @abstractmethod
-    def delete_permission(self, permission_id: int): ...
+    def delete_permission(self, permission_id: int) -> None: ...
 
     @abstractmethod
     def update_permission(self, permission_id: int, permission: PermissionBase) -> Permission | None: ...
@@ -32,7 +30,7 @@ class PermissionService(PermissionServiceInterface):
     def __init__(self, repo: PermissionRepositoryDep):
         self.repo = repo
 
-    def get_permissions(self, offset: int = 0, limit: Annotated[int, Query(le=100)] = 100) -> Sequence[Permission]:
+    def get_permissions(self, offset: int = 0, limit: int = 100) -> Sequence[Permission]:
         return self.repo.fetch_permissions(offset, limit)
 
     def create_permission(self, permission: PermissionBase) -> Permission:
@@ -44,7 +42,7 @@ class PermissionService(PermissionServiceInterface):
     def get_permission_by_name(self, name: str) -> Permission | None:
         return self.repo.get_by_name(name)
 
-    def delete_permission(self, permission_id: int):
+    def delete_permission(self, permission_id: int) -> None:
         self.repo.delete_permission(permission_id)
 
     def update_permission(self, permission_id: int, permission: PermissionBase) -> Permission | None:

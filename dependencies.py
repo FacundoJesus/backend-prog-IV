@@ -28,8 +28,11 @@ PermissionRepositoryDep = Annotated[PermissionRepository, Depends(PermissionRepo
 from services.permission_service import PermissionService, PermissionServiceInterface  # noqa: E402
 PermissionServiceDep = Annotated[PermissionServiceInterface, Depends(PermissionService)]
 
+from services.login_service import LoginService, LoginServiceInterface  # noqa: E402
+LoginServiceDep = Annotated[LoginServiceInterface, Depends(LoginService)]
+
 # Para usarlo en login_controller
-def get_jwt_service():
+def get_jwt_service() -> JWTService:
     return JWTService("my-secret-key")
 JWTServiceDep = Annotated[JWTService, Depends(get_jwt_service)]
 
@@ -41,7 +44,7 @@ def get_current_user(
     jwt_service: JWTServiceDep,
     repo: UserRepositoryDep,
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)]
-) -> UserDB | None:
+) -> UserDB:
     token = credentials.credentials
     payload = jwt_service.decode_token(token)
     if payload is None:

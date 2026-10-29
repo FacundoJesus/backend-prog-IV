@@ -1,14 +1,18 @@
+from collections.abc import Awaitable, Callable
 import logging
 import time
 
-from fastapi import Request
+from fastapi import Request, Response
 
 logger = logging.getLogger(__name__)
 
+
 class CounterMW:
-    async def middle_ware_prueba(self, request: Request, call_next):
+    async def middle_ware_prueba(
+        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
         start_time = time.perf_counter()
         response = await call_next(request)
-        process_time = (time.perf_counter() - start_time) * 1000000
+        process_time = (time.perf_counter() - start_time) * 1000
         logger.info(f"process time {process_time:.3f} ms")
         return response
