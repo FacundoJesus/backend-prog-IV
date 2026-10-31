@@ -1,12 +1,14 @@
 from services.jwt_service import JWTService
 
 
+# Inicialización del servicio JWT con valores por defecto
 def test_init() -> None:
     jwt_service = JWTService("my-secret")
     assert jwt_service.algorithm == "HS256"
     assert jwt_service.expire_minutes == 30
 
 
+# Creación y decodificación exitosa de token JWT válido
 def test_create_and_decode_token_ok() -> None:
     jwt_service = JWTService("secret-key-32-chars-long-test-pass", expire_minutes=15)
     token = jwt_service.create_access_token({"sub": "usuario@test.com", "role": "admin"})
@@ -19,6 +21,7 @@ def test_create_and_decode_token_ok() -> None:
     assert "exp" in payload
 
 
+# Decodificación de token JWT expirado retorna None
 def test_decode_expired_token() -> None:
     # expire_minutes negativo para generar un token inmediatamente expirado
     jwt_service = JWTService("secret-key-32-chars-long-test-pass", expire_minutes=-5)
@@ -28,12 +31,14 @@ def test_decode_expired_token() -> None:
     assert payload is None
 
 
+# Decodificación de token con formato inválido retorna None
 def test_decode_invalid_token() -> None:
     jwt_service = JWTService("secret-key-32-chars-long-test-pass")
     payload = jwt_service.decode_token("token_completamente_invalido_xyz")
     assert payload is None
 
 
+# Decodificación de token con clave secreta incorrecta retorna None
 def test_decode_wrong_secret() -> None:
     service1 = JWTService("secret-key-111111111111111111111111")
     service2 = JWTService("secret-key-222222222222222222222222")

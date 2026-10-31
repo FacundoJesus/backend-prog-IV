@@ -6,6 +6,7 @@ from repositories.role_repository import RoleRepository
 from services.role_service import RoleService
 
 
+# Operaciones CRUD completas en el servicio de roles
 def test_role_service_crud(session: Session, seed: None) -> None:
     service = RoleService(RoleRepository(session))
 
@@ -35,6 +36,7 @@ def test_role_service_crud(session: Session, seed: None) -> None:
     assert service.get_role_by_id(new_role.id) is None
 
 
+# Asignación y desasignación de permisos a un rol en la capa de servicio
 def test_role_service_add_and_remove_permission(session: Session, seed: None) -> None:
     role_service = RoleService(RoleRepository(session))
     perm_repo = PermissionRepository(session)

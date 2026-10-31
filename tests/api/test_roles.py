@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 
-# CREATE ROLE
+# Crear rol con datos válidos
 def test_create_role_ok(client: TestClient, admin_headers: dict[str, str]) -> None:
     payload = {"name": "EDITOR", "description": "Rol de edición"}
     res = client.post("/role", json=payload, headers=admin_headers)
@@ -10,6 +10,7 @@ def test_create_role_ok(client: TestClient, admin_headers: dict[str, str]) -> No
     assert "id" in res.json()
 
 
+# Crear rol rechazado por nombre duplicado (409)
 def test_create_role_duplicate(client: TestClient, admin_headers: dict[str, str]) -> None:
     # ADMIN ya existe por el seed
     payload = {"name": "ADMIN", "description": "Duplicado"}
@@ -18,7 +19,7 @@ def test_create_role_duplicate(client: TestClient, admin_headers: dict[str, str]
     assert res.json()["detail"] == "Role already exists"
 
 
-# GET ROLES
+# Obtener listado de roles
 def test_get_roles_ok(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.get("/role", headers=admin_headers)
     assert res.status_code == 200
@@ -26,13 +27,14 @@ def test_get_roles_ok(client: TestClient, admin_headers: dict[str, str]) -> None
     assert len(roles) >= 2  # ADMIN y REGULAR del seed
 
 
+# Obtener listado de roles con paginación
 def test_get_roles_pagination(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.get("/role?offset=0&limit=1", headers=admin_headers)
     assert res.status_code == 200
     assert len(res.json()) == 1
 
 
-# GET ROLE BY ID
+# Obtener rol por ID existente
 def test_get_role_by_id_ok(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.get("/role/1", headers=admin_headers)
     assert res.status_code == 200
@@ -42,13 +44,14 @@ def test_get_role_by_id_ok(client: TestClient, admin_headers: dict[str, str]) ->
     assert "permissions" in data
 
 
+# Obtener rol por ID inexistente (404)
 def test_get_role_by_id_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.get("/role/999", headers=admin_headers)
     assert res.status_code == 404
     assert res.json()["detail"] == "Role not found"
 
 
-# UPDATE ROLE
+# Actualizar datos de un rol existente
 def test_update_role_ok(client: TestClient, admin_headers: dict[str, str]) -> None:
     payload = {"name": "REGULAR_MODIFICADO", "description": "Nueva descripcion"}
     res = client.patch("/role/2", json=payload, headers=admin_headers)
@@ -56,6 +59,7 @@ def test_update_role_ok(client: TestClient, admin_headers: dict[str, str]) -> No
     assert res.json()["id"] == 2
 
 
+# Actualizar rol inexistente (404)
 def test_update_role_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     payload = {"name": "X", "description": "Y"}
     res = client.patch("/role/999", json=payload, headers=admin_headers)
@@ -63,6 +67,7 @@ def test_update_role_not_found(client: TestClient, admin_headers: dict[str, str]
     assert res.json()["detail"] == "Role not found"
 
 
+# Actualizar rol rechazado por conflicto de nombre duplicado (409)
 def test_update_role_duplicate_name(client: TestClient, admin_headers: dict[str, str]) -> None:
     # Intentar cambiar el nombre del rol 2 al nombre del rol 1 ("ADMIN")
     payload = {"name": "ADMIN", "description": "Conflicto"}
@@ -71,7 +76,7 @@ def test_update_role_duplicate_name(client: TestClient, admin_headers: dict[str,
     assert res.json()["detail"] == "Role already exists"
 
 
-# DELETE ROLE
+# Eliminar rol existente con éxito
 def test_delete_role_ok(client: TestClient, admin_headers: dict[str, str]) -> None:
     # Creamos un rol para borrar
     create_res = client.post("/role", json={"name": "BORRABLE", "description": "Borrar"}, headers=admin_headers)
@@ -86,13 +91,14 @@ def test_delete_role_ok(client: TestClient, admin_headers: dict[str, str]) -> No
     assert res_check.status_code == 404
 
 
+# Eliminar rol inexistente (404)
 def test_delete_role_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.delete("/role/999", headers=admin_headers)
     assert res.status_code == 404
     assert res.json()["detail"] == "Role not found"
 
 
-# ROLE PERMISSIONS ASSIGNMENT
+# Asignar y desasignar permiso a un rol exitosamente
 def test_add_and_remove_permission_to_role_ok(client: TestClient, admin_headers: dict[str, str]) -> None:
     # Permiso 3 (delete_users) al rol 2 (REGULAR)
     res_add = client.post("/role/2/permission/3", headers=admin_headers)
@@ -105,29 +111,33 @@ def test_add_and_remove_permission_to_role_ok(client: TestClient, admin_headers:
     assert not any(p["id"] == 3 for p in res_del.json()["permissions"])
 
 
+# Asignar permiso fallido por rol inexistente (404)
 def test_add_permission_role_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.post("/role/999/permission/1", headers=admin_headers)
     assert res.status_code == 404
     assert res.json()["detail"] == "Role not found"
 
 
+# Asignar permiso inexistente a un rol (404)
 def test_add_permission_permission_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.post("/role/1/permission/999", headers=admin_headers)
     assert res.status_code == 404
     assert res.json()["detail"] == "Permission not found"
 
 
+# Desasignar permiso fallido por rol inexistente (404)
 def test_remove_permission_role_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.delete("/role/999/permission/1", headers=admin_headers)
     assert res.status_code == 404
 
 
+# Desasignar permiso inexistente de un rol (404)
 def test_remove_permission_permission_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.delete("/role/1/permission/999", headers=admin_headers)
     assert res.status_code == 404
 
 
-# ROLE USERS
+# Obtener usuarios asociados a un rol existente
 def test_get_role_users_ok(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.get("/role/1/user", headers=admin_headers)
     assert res.status_code == 200
@@ -136,13 +146,14 @@ def test_get_role_users_ok(client: TestClient, admin_headers: dict[str, str]) ->
     assert any(u["id"] == 1 for u in users)
 
 
+# Obtener usuarios de un rol inexistente (404)
 def test_get_role_users_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.get("/role/999/user", headers=admin_headers)
     assert res.status_code == 404
     assert res.json()["detail"] == "Role not found"
 
 
-# PROTECTED ROUTES
+# Verificar protección de endpoints de roles sin token de autenticación (401)
 @pytest.mark.parametrize(
     "method, path",
     [

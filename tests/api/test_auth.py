@@ -9,12 +9,13 @@ from repositories.user_repository import UserRepository
 from services.jwt_service import JWTService
 
 
+# Acceso a la documentación Swagger UI
 def test_docs(client: TestClient) -> None:
     respuesta = client.get("/docs")
     assert respuesta.status_code == 200
 
 
-# Login Ok
+# Inicio de sesión exitoso con credenciales válidas
 def test_login_ok(client: TestClient, seed: None) -> None:
     respuesta = client.post(
         "/login",
@@ -28,7 +29,7 @@ def test_login_ok(client: TestClient, seed: None) -> None:
     assert respuesta.json()["token"]
 
 
-# Login Failed
+# Inicio de sesión fallido por contraseña incorrecta
 def test_login_wrong_pwd(client: TestClient, seed: None) -> None:
     respuesta = client.post(
         "/login",
@@ -41,6 +42,7 @@ def test_login_wrong_pwd(client: TestClient, seed: None) -> None:
     assert respuesta.json()["detail"] == "User/password incorrect"
 
 
+# Inicio de sesión fallido por email no registrado
 def test_login_wrong_email(client: TestClient, seed: None) -> None:
     respuesta = client.post(
         "/login",
@@ -53,12 +55,13 @@ def test_login_wrong_email(client: TestClient, seed: None) -> None:
     assert respuesta.json()["detail"] == "User/password incorrect"
 
 
+# Inicio de sesión con payload inválido (error de validación 422)
 def test_login_wrong_request(client: TestClient) -> None:
     respuesta = client.post("/login", json={"cualquiera": "cualquieremail@email.com"})
     assert respuesta.status_code == 422
 
 
-# Current User Helper
+# Obtención del usuario actual autenticado mediante helper de dependencias
 def test_get_current_user_helper(session: Session, seed: None) -> None:
     jwt_service = JWTService("my-secret-key")
     repo = UserRepository(session)

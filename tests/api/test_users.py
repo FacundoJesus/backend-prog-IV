@@ -2,20 +2,21 @@ import pytest
 from fastapi.testclient import TestClient
 
 
-# GET USERS
+# Obtener listado general de usuarios
 def test_get_user_ok(client: TestClient, auth_headers: dict[str, str]) -> None:
     res = client.get("/user", headers=auth_headers)
     assert res.status_code == 200
     assert len(res.json()) == 3
 
 
+# Obtener listado de usuarios con paginación
 def test_get_users_pagination(client: TestClient, auth_headers: dict[str, str]) -> None:
     res = client.get("/user?offset=1&limit=1", headers=auth_headers)
     assert res.status_code == 200
     assert len(res.json()) == 1
 
 
-# CREATE USER
+# Crear un nuevo usuario con datos válidos
 def test_create_user_ok(client: TestClient, auth_headers: dict[str, str]) -> None:
     payload = {
         "name": "Nuevo Usuario",
@@ -31,6 +32,7 @@ def test_create_user_ok(client: TestClient, auth_headers: dict[str, str]) -> Non
     assert data["id"] is not None
 
 
+# Creación de usuario rechazada por datos inválidos (422)
 def test_create_user_invalid(client: TestClient, auth_headers: dict[str, str]) -> None:
     payload = {
         "name": "Test",
@@ -43,7 +45,21 @@ def test_create_user_invalid(client: TestClient, auth_headers: dict[str, str]) -
     assert res.status_code == 422
 
 
-# GET USER BY ID
+# Creación de usuario rechazada por falta de permisos (403)
+def test_create_user_forbidden(client: TestClient, regular_headers: dict[str, str]) -> None:
+    payload = {
+        "name": "Nuevo Usuario",
+        "email": "nuevo@email.com",
+        "age": 25,
+        "password": "password123",
+        "country_id": 1,
+    }
+    res = client.post("/user", json=payload, headers=regular_headers)
+    assert res.status_code == 403
+    assert "Missing permission" in res.json()["detail"]
+
+
+# Obtener usuario por ID existente
 def test_get_user_by_id_ok(client: TestClient, auth_headers: dict[str, str]) -> None:
     res = client.get("/user/1", headers=auth_headers)
     assert res.status_code == 200
@@ -52,13 +68,14 @@ def test_get_user_by_id_ok(client: TestClient, auth_headers: dict[str, str]) -> 
     assert "country" in res.json()
 
 
+# Obtener usuario por ID inexistente (404)
 def test_get_user_by_id_fail(client: TestClient, auth_headers: dict[str, str]) -> None:
     res = client.get("/user/120", headers=auth_headers)
     assert res.status_code == 404
     assert res.json()["detail"] == "User not found"
 
 
-# SEARCH USER BY NAME
+# Buscar usuarios por coincidencia de nombre
 def test_search_user_ok(client: TestClient, auth_headers: dict[str, str]) -> None:
     res = client.get("/user/search/Martina", headers=auth_headers)
     assert res.status_code == 200
@@ -67,20 +84,21 @@ def test_search_user_ok(client: TestClient, auth_headers: dict[str, str]) -> Non
     assert any("Martina" in u["name"] for u in users)
 
 
+# Buscar usuarios sin coincidencias
 def test_search_user_empty(client: TestClient, auth_headers: dict[str, str]) -> None:
     res = client.get("/user/search/InexistenteXYZ", headers=auth_headers)
     assert res.status_code == 200
     assert res.json() == []
 
 
-# GET CURRENT USER ID
+# Obtener ID del usuario actualmente autenticado
 def test_get_my_id_ok(client: TestClient, auth_headers: dict[str, str]) -> None:
     res = client.get("/user/me/id", headers=auth_headers)
     assert res.status_code == 200
     assert res.json() == {"id": 1}
 
 
-# GET USER MAYORES
+# Obtener usuarios mayores de edad
 def test_search_mayores_ok(client: TestClient, auth_headers: dict[str, str]) -> None:
     res = client.get("/user_mayores", headers=auth_headers)
     assert res.status_code == 200
@@ -89,7 +107,7 @@ def test_search_mayores_ok(client: TestClient, auth_headers: dict[str, str]) -> 
     assert all(u["age"] >= 18 for u in users)
 
 
-# UPDATE USER
+# Actualizar datos de un usuario existente
 def test_update_user_ok(client: TestClient, admin_headers: dict[str, str]) -> None:
     update_data = {
         "name": "Santiago Modificado",
@@ -103,6 +121,7 @@ def test_update_user_ok(client: TestClient, admin_headers: dict[str, str]) -> No
     assert res.json()["id"] == 2
 
 
+# Actualizar usuario inexistente (404)
 def test_update_user_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     update_data = {
         "name": "No Existe",
@@ -116,6 +135,7 @@ def test_update_user_not_found(client: TestClient, admin_headers: dict[str, str]
     assert res.json()["detail"] == "User not found"
 
 
+# Actualizar usuario rechazado por falta de permisos (403)
 def test_update_user_forbidden(client: TestClient, regular_headers: dict[str, str]) -> None:
     update_data = {
         "name": "Intento Modificar",
@@ -129,13 +149,14 @@ def test_update_user_forbidden(client: TestClient, regular_headers: dict[str, st
     assert "Missing permission" in res.json()["detail"]
 
 
-# DELETE USER
+# Eliminar usuario rechazado por falta de permisos (403)
 def test_delete_user_forbidden(client: TestClient, regular_headers: dict[str, str]) -> None:
     res = client.delete("/user/3", headers=regular_headers)
     assert res.status_code == 403
     assert "Missing permission" in res.json()["detail"]
 
 
+# Eliminar usuario existente con éxito
 def test_delete_user_ok(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.delete("/user/3", headers=admin_headers)
     assert res.status_code == 200
@@ -146,12 +167,13 @@ def test_delete_user_ok(client: TestClient, admin_headers: dict[str, str]) -> No
     assert res_check.status_code == 404
 
 
+# Eliminar usuario inexistente (404)
 def test_delete_user_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.delete("/user/999", headers=admin_headers)
     assert res.status_code == 404
 
 
-# ROLES ASSIGNMENT TO USERS
+# Asignar y desasignar rol a un usuario exitosamente
 def test_add_and_remove_role_to_user_ok(client: TestClient, admin_headers: dict[str, str]) -> None:
     res_add = client.post("/user/2/role/1", headers=admin_headers)
     assert res_add.status_code == 200
@@ -160,29 +182,47 @@ def test_add_and_remove_role_to_user_ok(client: TestClient, admin_headers: dict[
     assert res_del.status_code == 200
 
 
+# Asignar rol a usuario rechazado por falta de permisos (403)
+def test_add_role_forbidden_for_regular(client: TestClient, regular_headers: dict[str, str]) -> None:
+    res = client.post("/user/2/role/1", headers=regular_headers)
+    assert res.status_code == 403
+    assert "Missing permission" in res.json()["detail"]
+
+
+# Desasignar rol a usuario rechazado por falta de permisos (403)
+def test_remove_role_forbidden_for_regular(client: TestClient, regular_headers: dict[str, str]) -> None:
+    res = client.delete("/user/2/role/1", headers=regular_headers)
+    assert res.status_code == 403
+    assert "Missing permission" in res.json()["detail"]
+
+
+# Asignar rol fallido por usuario inexistente (404)
 def test_add_role_user_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.post("/user/999/role/1", headers=admin_headers)
     assert res.status_code == 404
     assert res.json()["detail"] == "User not found"
 
 
+# Asignar rol inexistente a un usuario (404)
 def test_add_role_role_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.post("/user/1/role/999", headers=admin_headers)
     assert res.status_code == 404
     assert res.json()["detail"] == "Role not found"
 
 
+# Desasignar rol fallido por usuario inexistente (404)
 def test_remove_role_user_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.delete("/user/999/role/1", headers=admin_headers)
     assert res.status_code == 404
 
 
+# Desasignar rol inexistente de un usuario (404)
 def test_remove_role_role_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     res = client.delete("/user/1/role/999", headers=admin_headers)
     assert res.status_code == 404
 
 
-# PROTECTED ROUTES WITHOUT AUTH
+# Verificar protección de endpoints de usuarios sin token de autenticación (401)
 @pytest.mark.parametrize(
     "method, path",
     [

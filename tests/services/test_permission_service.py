@@ -5,6 +5,7 @@ from repositories.permission_repository import PermissionRepository
 from services.permission_service import PermissionService
 
 
+# Operaciones CRUD completas en el servicio de permisos
 def test_permission_service_crud(session: Session, seed: None) -> None:
     service = PermissionService(PermissionRepository(session))
 

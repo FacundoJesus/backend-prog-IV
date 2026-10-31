@@ -7,12 +7,14 @@ from repositories.user_repository import UserRepository
 from services.user_service import UserService
 
 
+# Obtener listado de usuarios desde la capa de servicio
 def test_user_service_get_users(session: Session, seed: None) -> None:
     service = UserService(UserRepository(session))
     users = service.get_users(offset=0, limit=10)
     assert len(users) == 3
 
 
+# Creación de usuario con contraseña hasheada en servicio
 def test_user_service_create_user(session: Session, seed: None) -> None:
     service = UserService(UserRepository(session))
     new_user = User(
@@ -27,6 +29,7 @@ def test_user_service_create_user(session: Session, seed: None) -> None:
     assert created.email == "cperez@email.com"
 
 
+# Obtención de usuario por ID en servicio (existente e inexistente)
 def test_user_service_get_by_id(session: Session, seed: None) -> None:
     service = UserService(UserRepository(session))
     user = service.get_user_by_id(1)
@@ -37,6 +40,7 @@ def test_user_service_get_by_id(session: Session, seed: None) -> None:
     assert user_none is None
 
 
+# Búsqueda de usuarios por coincidencia de nombre en servicio
 def test_user_service_search_users(session: Session, seed: None) -> None:
     service = UserService(UserRepository(session))
     results = service.search_users("Martina")
@@ -44,6 +48,7 @@ def test_user_service_search_users(session: Session, seed: None) -> None:
     assert results[0].email == "mgomez@email.com"
 
 
+# Filtrado de usuarios mayores de edad en servicio
 def test_user_service_search_mayores(session: Session, seed: None) -> None:
     service = UserService(UserRepository(session))
     adults = service.search_mayores()
@@ -51,6 +56,7 @@ def test_user_service_search_mayores(session: Session, seed: None) -> None:
     assert all(u.age >= 18 for u in adults)
 
 
+# Actualización de datos de usuario en servicio (existente e inexistente)
 def test_user_service_update_user(session: Session, seed: None) -> None:
     service = UserService(UserRepository(session))
     user_update = User(
@@ -69,12 +75,14 @@ def test_user_service_update_user(session: Session, seed: None) -> None:
     assert updated_none is None
 
 
+# Eliminación de usuario en la capa de servicio
 def test_user_service_delete_user(session: Session, seed: None) -> None:
     service = UserService(UserRepository(session))
     service.delete_user(3)
     assert service.get_user_by_id(3) is None
 
 
+# Asignación y desasignación de roles a un usuario en servicio
 def test_user_service_add_and_remove_role(session: Session, seed: None) -> None:
     user_service = UserService(UserRepository(session))
     role_repo = RoleRepository(session)
