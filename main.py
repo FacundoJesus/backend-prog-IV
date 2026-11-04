@@ -2,6 +2,7 @@
 import logging
 
 from fastapi import Depends, FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import (
     Session,
     select,
@@ -15,6 +16,7 @@ from repositories import database
 from repositories.database import create_db_and_tables
 from repositories.seed import seed_roles_and_permissions, seed_user_roles
 from utils.hash import hash_password
+
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +34,21 @@ app.include_router(role_controller.router)
 app.include_router(permission_controller.router)
 
 counterMW = CounterMW()
+
+# 1. Define los orígenes permitidos (la URL de tu frontend)
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# 2. Agrega el middleware a la aplicación
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          # Permite tu frontend
+    allow_credentials=True,
+    allow_methods=["*"],            # Permite todos los métodos (POST, GET, etc.)
+    allow_headers=["*"],            # Permite todos los headers
+)
 
 
 @app.middleware("counter")
