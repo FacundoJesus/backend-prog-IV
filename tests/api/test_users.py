@@ -66,6 +66,7 @@ def test_get_user_by_id_ok(client: TestClient, auth_headers: dict[str, str]) -> 
     assert res.json()["id"] == 1
     assert res.json()["email"] == "mgomez@email.com"
     assert "country" in res.json()
+    assert "roles" in res.json()
 
 
 # Obtener usuario por ID inexistente (404)
