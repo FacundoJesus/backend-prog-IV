@@ -74,7 +74,6 @@ def get_user_by_id(user_id: int, service: UserServiceDep) -> UserDB:
     return user
 
 
-
 # Buscar Usuario por Nombre
 @router.get("/user/search/{name}", response_model=Sequence[GetUserResponseWithCountry], dependencies=[Depends(permission_check("read_users"))])
 @protected
