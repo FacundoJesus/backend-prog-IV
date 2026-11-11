@@ -53,7 +53,7 @@ def create_user(req: CreateUserRequest, service: UserServiceDep) -> UserDB:
 
 
 # Obtener Usuarios
-@router.get("/user", response_model=Sequence[GetUsersResponse], dependencies=[Depends(permission_check("read_users"))])
+@router.get("/users", response_model=Sequence[GetUsersResponse], dependencies=[Depends(permission_check("read_users"))])
 @protected
 def get_users(
     service: UserServiceDep,
