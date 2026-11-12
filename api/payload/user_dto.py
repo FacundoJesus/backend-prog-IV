@@ -1,7 +1,7 @@
 # Nivel de API
 from sqlmodel import SQLModel
 
-from api.payload.roles import RoleResponse
+from api.payload.role_dto import RoleResponse
 from models.users import CountryBase
 
 

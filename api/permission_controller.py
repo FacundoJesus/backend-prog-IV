@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.security import HTTPBearer
 
 from api.middlewares.protected import protected
-from api.payload.permissions import (
+from api.payload.permission_dto import (
     CreatePermissionRequest,
     CreatePermissionResponse,
     DeletePermissionResponse,

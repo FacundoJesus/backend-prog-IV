@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel
 
-from api.payload.permissions import GetPermissionResponse
+from api.payload.permission_dto import GetPermissionResponse
 
 
 class CreateRoleRequest(SQLModel):
