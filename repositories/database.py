@@ -1,6 +1,12 @@
 from collections.abc import Generator
-import os
+
 from sqlmodel import Session, SQLModel, create_engine
+
+import os
+from dotenv import load_dotenv
+
+# Carga las variables del archivo .env al sistema
+load_dotenv()
 
 DB_ENGINE = os.getenv("DB_ENGINE","sqlite").lower()
 

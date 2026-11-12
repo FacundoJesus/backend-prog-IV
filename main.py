@@ -35,11 +35,6 @@ app.include_router(permission_controller.router)
 
 counterMW = CounterMW()
 
-from dotenv import load_dotenv
-
-# Carga las variables del archivo .env al sistema
-load_dotenv()
-
 # 1. Define los orígenes permitidos (la URL de tu frontend)
 origins = [
     "http://localhost:3000",
