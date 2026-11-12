@@ -4,14 +4,14 @@ from fastapi.testclient import TestClient
 
 # Obtener listado general de usuarios
 def test_get_user_ok(client: TestClient, auth_headers: dict[str, str]) -> None:
-    res = client.get("/user", headers=auth_headers)
+    res = client.get("/users", headers=auth_headers)
     assert res.status_code == 200
     assert len(res.json()) == 3
 
 
 # Obtener listado de usuarios con paginación
 def test_get_users_pagination(client: TestClient, auth_headers: dict[str, str]) -> None:
-    res = client.get("/user?offset=1&limit=1", headers=auth_headers)
+    res = client.get("/users?offset=1&limit=1", headers=auth_headers)
     assert res.status_code == 200
     assert len(res.json()) == 1
 
@@ -227,7 +227,7 @@ def test_remove_role_role_not_found(client: TestClient, admin_headers: dict[str,
 @pytest.mark.parametrize(
     "method, path",
     [
-        ("get", "/user"),
+        ("get", "/users"),
         ("get", "/user/1"),
         ("get", "/user/search/ma"),
         ("get", "/user_mayores"),
