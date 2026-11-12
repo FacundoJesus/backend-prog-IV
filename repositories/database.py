@@ -5,6 +5,7 @@ from sqlmodel import Session, SQLModel, create_engine
 DB_ENGINE = os.getenv("DB_ENGINE","sqlite").lower()
 
 if DB_ENGINE == "sqlite":
+    print('conectado a sqlite')
     sqlite_file_name = "database.db"
     sqlite_url = f"sqlite:///{sqlite_file_name}"
 
@@ -12,7 +13,10 @@ if DB_ENGINE == "sqlite":
     engine = create_engine(sqlite_url, connect_args=connect_args)
 
 elif DB_ENGINE == "postgres":
-    database_url = "postgresql+psycopg://postgres:ca2162sa@localhost:5432/utn"
+    print('conectado a postgres')
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        raise RuntimeError("postgres url has not been set up")
     engine = create_engine(database_url, pool_pre_ping=True)
 
 else:
