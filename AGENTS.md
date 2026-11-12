@@ -5,7 +5,8 @@ Backend desarrollado para la cátedra de Programación IV de la UTN Paraná. Exp
 - Lenguaje: Python 3
 - Framework: FastAPI
 - Servidor ASGI: Uvicorn
-- Base de datos: SQLite usando SQLModel (SQLAlchemy)
+- Base de datos: SQLite o PostgreSQL (usando psycopg) mediante SQLModel (SQLAlchemy)
+- Configuración y Variables de Entorno: python-dotenv (`.env`)
 - Autenticación y Autorización: JWT (PyJWT), bcrypt (encriptación de contraseñas) y control de acceso basado en roles y permisos (RBAC)
 - Linter/Formatter: Ruff (configurado en `pyproject.toml`)
 - Type Checker: Pyright
@@ -20,11 +21,18 @@ Backend desarrollado para la cátedra de Programación IV de la UTN Paraná. Exp
 - `api/` — Endpoints y rutas de FastAPI (controladores: usuarios, login, roles, permisos). Contiene middlewares (`auth`, `counter`) y decoradores de protección (`@protected`).
 - `api/payload/` — Esquemas de validación y DTOs de request/response (usuarios, roles, permisos).
 - `models/` — Modelos de datos (SQLModel) para usuarios (`users.py`), permisos (`permissions.py`) y roles (`roles.py`, con tablas intermedias `RolePermission` y `UserRole`).
-- `repositories/` — Acceso a datos, configuración de la BD e interacciones directas con la base de datos (Patrón Repository: usuarios, roles, permisos) y semillas de datos (`seed.py`).
+- `repositories/` — Acceso a datos, configuración de la BD (soporte para SQLite y PostgreSQL en `database.py`) e interacciones directas con la base de datos (Patrón Repository: usuarios, roles, permisos) y semillas de datos (`seed.py`).
 - `services/` — Lógica de negocio e interfaces abstractas (`UserServiceInterface`, `RoleServiceInterface`, `PermissionServiceInterface`, `JWTService`).
 - `utils/` — Funciones utilitarias auxiliares (como el manejo de hashes y contraseñas).
 - `dependencies.py` — Dependencias inyectables compartidas por la API (sesión de BD, repositorios, interfaces de servicios, autenticación y usuario actual).
 - `tests/` — Tests automatizados unitarios y de integración con `pytest` (`tests/api/`, `tests/services/`).
+- `.env` — Variables de entorno locales (motor de BD, cadenas de conexión, etc.).
+- `requirements.txt` — Lista de dependencias del proyecto fijadas (incluye `python-dotenv`, `psycopg`, etc.).
+
+## Configuración y Variables de Entorno (.env)
+La conexión a base de datos en `repositories/database.py` se gestiona dinámicamente mediante variables de entorno:
+- `DB_ENGINE`: Define el motor de base de datos (`sqlite` o `postgres`). Por defecto es `sqlite`.
+- `DATABASE_URL`: Cadena de conexión requerida cuando `DB_ENGINE=postgres` (p. ej., `postgresql+psycopg://usuario:password@localhost:5432/nombre_db`).
 
 ## Convenciones
 - **Estilo de código:** Seguir PEP 8. Variables y funciones en `snake_case`, clases en `PascalCase`.
@@ -35,8 +43,8 @@ Backend desarrollado para la cátedra de Programación IV de la UTN Paraná. Exp
 
 ## No hagas
 - No instalar dependencias o actualizar versiones sin justificación, en especial aquellas sensibles como `bcrypt` que requieran un entorno de compilación complejo (C/C++).
-- No hardcodear tokens, secrets, o credenciales (excepto `my-secret-key` provisto para fines de desarrollo).
-- No subir archivos sensibles al repositorio como `database.db` o la carpeta de entorno virtual `.venv`.
+- No hardcodear tokens, secrets, o credenciales (usar variables de entorno vía `.env`, excepto `my-secret-key` provisto para desarrollo).
+- No subir archivos sensibles al repositorio como `.env`, `database.db` o la carpeta de entorno virtual `.venv`.
 - No alterar las importaciones y estructura en `main.py` sin asegurarse de que no se rompe el flujo de inicialización y carga de datos de prueba.
 
 ## Flujo de trabajo
